@@ -1,14 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student List 2</title>
-    <link rel="stylesheet" href="studentlist.css" type="text/css">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Studentlist_2</title>
+
+    <style>
+      :root {
+        --gryffindor-bg-color: #ce3a0a;
+        --gryffindor-txt-color: #fdb02e;
+
+        --hufflepuf-bg-color: #ffc02a;
+        --hufflepuf-txt-color: #0b0000;
+
+        --ravenclaw-bg-color: #395f9d;
+        --ravenclaw-txt-color: #e9ba36;
+
+        --slytherin-bg-color: #588c39;
+        --slytherin-txt-color: #c0b1c6;
+
+        --stdFont: Avenir, Verdana, sans-serif;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+          background-color: aliceblue;
+      }
+
+      .gryffindor {
+          background-color: var(--gryffindor-bg-color);
+          color: var(--gryffindor-txt-color);
+      }
+
+      .hufflepuf {
+        background-color: var(--hufflepuf-bg-color);
+        color: var(--hufflepuf-txt-color);
+      }
+
+      .ravenclaw {
+        background-color: var(--ravenclaw-bg-color);
+        color: var(--ravenclaw-txt-color);
+      }
+
+      .slytherin {
+          background-color: var(--slytherin-bg-color);
+          color: var(--slytherin-txt-color);  
+      }
+
+      .pWrap {
+            width: 300px;
+            display: flex;
+            justify-content: space-between;
+      }
+
+      button {
+          padding: 3px;
+          border-radius: 5%;
+          font-family: var(--stdFont);
+      }
+
+      #modal {
+        background-color: rgba(112, 112, 112, 0.95);
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        opacity: 0;
+        pointer-events: none;
+        transition: 1s;
+        top: 0;
+        z-index: 1;
+        color: rgb(0, 0, 0);
+        padding-top: 20vw;
+      }
+
+      #modal.show_modal {
+        opacity: 1;
+        pointer-events: all;
+        transition: 0.5s;
+      }
+
+
+
+    </style>
 </head>
 <body>
-  <h1>Students 1991</h1>
-    
-  <script src="studentlist.js"></script>
+    <section id="modal">
+
+
+        <button class="boksButton" id="close">&#10006;
+
+        </button>
+
+        <div id="modal_content">
+        
+        </div>
+
+    </section>
+
+  </section>
+    <main>
+        <div class="buttonContainer">
+            <button class="sortButton firstNameButton">Sort by Firstname</button>
+            <button class="sortButton lastNameButton">Sort by Lastname</button>
+            <button class="sortButton">Sort by House</button>
+            <button data-category="Gryffindor" class="filterButton gryffindor">Gryffindor students</button>
+            <button data-category="Hufflepuff" class="filterButton hufflepuf">Hufflepuff students</button>
+            <button data-category="Ravenclaw" class="filterButton ravenclaw">Ravenclaw students</button>
+            <button data-category="Slytherin" class="filterButton slytherin">Slytherin students</button>
+            <button data-category="All" class="filterButton">All students</button>
+          </div>
+        <section class="data-container">
+          
+
+        </section>
+    </main>
+
+    <template class="data-template">
+        <div class="pWrap">
+            <p data-name></p>
+            <p data-house></p>
+        </div>
+    </template>
+    <script>
+        let thisJson;
+        let dest = document.querySelector(".data-container");
+        let houseFilter = "All";
+        let modal = document.querySelector("#modal");
+
+        document.addEventListener("DOMContentLoaded", init);
+
+        function init() {
+
+          getJson();
+
+        } 
+
+        async function getJson() {
+
+          let myJson = await fetch("http://petlatkea.dk/2019/students1991.json");
+          thisJson = await myJson.json();
+          showJson();
+        }
+
+        function showJson() {
+
+          let myTemplate = document.querySelector(".data-template");
+
+          let studentsFullName = thisJson;
+
+          thisJson.forEach(post => {
+            if (post.house == houseFilter || houseFilter == "All") {
+
+              let klon = myTemplate.cloneNode(true).content;
+              klon.querySelector("[data-name]").textContent = post.fullname;
+              klon.querySelector("[data-house]").textContent = post.house;
+
+              dest.appendChild(klon);
+            }
+          });
+        }
+        
+        function filtering() {
+            dest.textContent = "";
+            houseFilter = this.getAttribute("data-category");
+            showJson();
+        }
+        
+        document.querySelectorAll(".filterButton").forEach(knap => {
+            knap.addEventListener("click", filtering)
+        });
+
+        function showModal() {
+            modal.classList.add("show_modal");
+            document.querySelector("#close").addEventListener("click", hideModal);
+        }
+
+        function hideModal() {
+            modal.classList.remove("show_modal");
+
+        }
+
+        
+
+    </script>
 </body>
 </html>
