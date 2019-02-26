@@ -134,9 +134,9 @@
   </section>
     <main>
         <div class="buttonContainer">
-            <button class="sortButton firstNameButton">Sort by Firstname</button>
-            <button class="sortButton lastNameButton">Sort by Lastname</button>
-            <button class="sortButton">Sort by House</button>
+            <button id="firstnameButton">Sort by Firstname</button>
+            <button >Sort by Lastname</button>
+            <button >Sort by House</button>
             <button id="gryffindor" class="gryffindor">Gryffindor students</button>
             <button id="hufflepuff" class="hufflepuff">Hufflepuff students</button>
             <button id="ravenclaw" class="ravenclaw">Ravenclaw students</button>
@@ -177,6 +177,8 @@
           document.querySelector("#ravenclaw").addEventListener("click", sortRavenclaw);
           document.querySelector("#slytherin").addEventListener("click", sortSlytherin);
           document.querySelector("#all").addEventListener("click", sortAll);
+
+          document.querySelector("#firstnameButton").addEventListener("click", callSortByFirstname);
           
 
           getJson();
@@ -247,6 +249,18 @@
           filterList(houseFilter);
         }
 
+        function filterByHouse(house) {
+          function onlyHouse( element ) {
+              if (element.house.toLowerCase() === house.toLowerCase() ) {
+                  return true;
+              }
+              else {
+                  return false;
+              }
+          }
+        return arrayOfStudents.filter(onlyHouse);
+        }
+
         function filterList(houseFilter) {
           dest.textContent = "";
           let filteredList = arrayOfStudents;
@@ -268,22 +282,52 @@
           }
           
           showJson(filteredList);
+          return filteredList;
 
         }
 
-        function filterByHouse(house) {
-          function onlyHouse( element ) {
-              if (element.house.toLowerCase() === house.toLowerCase() ) {
-                  return true;
-              }
-              else {
-                  return false;
-              }
+        function callSortByFirstname(filteredList) {
+          arrayOfStudents.sort(sortByFirstname);
+          showJson(filteredList);
+        }
+
+        function sortByFirstname(a, b) {
+          if( a.firstname < b.firstname) {
+            return -1;
+
           }
-        return arrayOfStudents.filter(onlyHouse);
+          else {
+            return 1;
+          }
+          
         }
 
-        function showJson(filteredList) {
+        function sortByLastname(a, b) {
+          if( a.lastname < b.lastname) {
+            return -1;
+
+          }
+          else {
+            return 1;
+          }
+          
+        }
+        
+        function sortByHouse(a, b) {
+          if( a.house < b.house) {
+            return -1;
+
+          }
+          else {
+            return 1;
+          }
+          
+        }
+        
+
+       
+
+        function showJson(filteredList, sortedList) {
 
           let myTemplate = document.querySelector(".data-template");
 
@@ -305,7 +349,8 @@
             
           );
         }
-        
+
+       
         
 
 
