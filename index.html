@@ -137,11 +137,11 @@
             <button class="sortButton firstNameButton">Sort by Firstname</button>
             <button class="sortButton lastNameButton">Sort by Lastname</button>
             <button class="sortButton">Sort by House</button>
-            <button data-category="Gryffindor" onclick="filterByHouse('Gryffindor')" class="filterButton gryffindor">Gryffindor students</button>
-            <button data-category="Hufflepuff" class="filterButton hufflepuff">Hufflepuff students</button>
-            <button data-category="Ravenclaw" class="filterButton ravenclaw">Ravenclaw students</button>
-            <button data-category="Slytherin" class="filterButton slytherin">Slytherin students</button>
-            <button data-category="All" class="filterButton">All students</button>
+            <button id="gryffindor" class="gryffindor">Gryffindor students</button>
+            <button id="hufflepuff" class="hufflepuff">Hufflepuff students</button>
+            <button id="ravenclaw" class="ravenclaw">Ravenclaw students</button>
+            <button id="slytherin" class="slytherin">Slytherin students</button>
+            <button id="all">All students</button>
           </div>
         <section class="data-container">
           
@@ -160,18 +160,24 @@
         </div>
     </template>
     <script>
-    "use strict";
 
+    "use strict";
 
         let thisJson;
         let dest = document.querySelector(".data-container");
-        let houseFilter = "All";
         let modal = document.querySelector("#modal");
-        
+        let houseFilter = "";
 
         document.addEventListener("DOMContentLoaded", init);
 
         function init() {
+
+          document.querySelector("#gryffindor").addEventListener("click", sortGryffindor);
+          document.querySelector("#hufflepuff").addEventListener("click", sortHufflepuff);
+          document.querySelector("#ravenclaw").addEventListener("click", sortRavenclaw);
+          document.querySelector("#slytherin").addEventListener("click", sortSlytherin);
+          document.querySelector("#all").addEventListener("click", sortAll);
+          
 
           getJson();
 
@@ -179,38 +185,9 @@
 
         async function getJson() {
 
-          let myJson = await fetch("http://petlatkea.dk/2019/students1991.json");
+          let myJson = await fetch("students1991.json");
           thisJson = await myJson.json();
-          showJson();
-        }
-
-        function showJson() {
-
-          let myTemplate = document.querySelector(".data-template");
-
-          let studentsFullName = thisJson;
-
-          thisJson.forEach(post => {
-            let firstSpace = post.fullname.indexOf(" ");
-            let lastSpace = post.fullname.lastIndexOf(" ");
-            
-            if (post.house == houseFilter || houseFilter == "All") {
-
-              let klon = myTemplate.cloneNode(true).content;
-              klon.querySelector("[data-firstname]").textContent = post.fullname.substring(0, firstSpace);
-              klon.querySelector("[data-lastname]").textContent = post.fullname.substring(lastSpace, );
-              klon.querySelector("[data-house]").textContent = post.house;
-              
-
-              klon.querySelector(".name").addEventListener("click", () => {
-                        showModal(post);
-              });
-
-              dest.appendChild(klon);
-            }
-          });
-          
-          createStudents();
+          createStudents(thisJson);
         }
 
         const Student = {
@@ -218,12 +195,12 @@
           lastname: "student lastname",
           house: "student house",
           
-          setJSONData ( studentData ) {
+          setJsonData ( studentData ) {
             let firstSpace = studentData.fullname.indexOf(" ");
             let lastSpace = studentData.fullname.lastIndexOf(" ");
 
             this.firstname = studentData.fullname.substring(0, firstSpace);
-            this.lastname = studentData.fullname.substring(lastSpace, );
+            this.lastname = studentData.fullname.substring(lastSpace + 1, );
             this.house = studentData.house;
           },
         
@@ -236,52 +213,110 @@
           thisJson.forEach(studentData => {
               let studentPrototype = Object.create(Student);
 
-              studentPrototype.setJSONData( studentData );
+              studentPrototype.setJsonData( studentData );
               
               arrayOfStudents.push(studentPrototype);
               
           });
-          console.log(arrayOfStudents);
+          filterList(houseFilter);
+
+        }
+
+        function sortGryffindor() {
+          houseFilter = "gryffindor";
+          filterList(houseFilter);
+        }
+        
+        function sortHufflepuff() {
+          houseFilter = "hufflepuff";
+          filterList(houseFilter);
+        }
+
+        function sortRavenclaw() {
+          houseFilter = "ravenclaw";
+          filterList(houseFilter);
+        }
+
+        function sortSlytherin() {
+          houseFilter = "slytherin";
+          filterList(houseFilter);
+        }
+
+        function sortAll() {
+          houseFilter = "";
+          filterList(houseFilter);
+        }
+
+        function filterList(houseFilter) {
+          dest.textContent = "";
+          let filteredList = arrayOfStudents;
+
+          if (houseFilter === "") {
+            
+          }
+          else if (houseFilter === "gryffindor") {
+            filteredList = filterByHouse("gryffindor");
+          }
+          else if (houseFilter === "hufflepuff") {
+            filteredList = filterByHouse("hufflepuff");
+          }
+          else if (houseFilter === "ravenclaw") {
+            filteredList = filterByHouse("ravenclaw");
+          }
+          else if (houseFilter === "slytherin") {
+            filteredList = filterByHouse("slytherin");
+          }
+          
+          showJson(filteredList);
 
         }
 
         function filterByHouse(house) {
           function onlyHouse( element ) {
-            if (element.house === house ) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        cosnole.log("1")
+              if (element.house.toLowerCase() === house.toLowerCase() ) {
+                  return true;
+              }
+              else {
+                  return false;
+              }
+          }
         return arrayOfStudents.filter(onlyHouse);
-    }
+        }
 
+        function showJson(filteredList) {
 
+          let myTemplate = document.querySelector(".data-template");
+
+          filteredList.forEach(post => {
+            
+
+              let klon = myTemplate.cloneNode(true).content;
+              klon.querySelector("[data-firstname]").textContent = post.firstname;
+              klon.querySelector("[data-lastname]").textContent = post.lastname;
+              klon.querySelector("[data-house]").textContent = post.house;
+              
+
+              klon.querySelector(".name").addEventListener("click", () => {
+                showModal(post);
+              });
+
+              dest.appendChild(klon);
+            }
+            
+          );
+        }
         
-        // function filtering() {
-        //     dest.textContent = "";
-        //     houseFilter = this.getAttribute("data-category");
-        //     showJson();
-        // }
         
-        // document.querySelectorAll(".filterButton").forEach(knap => {
-        //     knap.addEventListener("click", filtering)
-        // });
+
 
         function showModal(post) {
-            let firstSpace = post.fullname.indexOf(" ");
-            let lastSpace = post.fullname.lastIndexOf(" ");
 
             modal.classList.add("show_modal");
             
-            modal.querySelector("[data-firstname]").textContent = post.fullname.substring(0, firstSpace);
-            modal.querySelector("[data-lastname]").textContent = post.fullname.substring(lastSpace, );
+            modal.querySelector("[data-firstname]").textContent = post.firstname;
+            modal.querySelector("[data-lastname]").textContent = post.lastname;
             modal.querySelector("#modalHouse").textContent = post.house;
-            modal.querySelector("#modalImg").src = "images/" + (post.fullname.substring(lastSpace + 1, ) + "_" + post.fullname.substring(0, 1)).toLowerCase() + ".png";
-
-            console.log(post.house);
+            modal.querySelector("#modalImg").src = "images/" + (post.lastname + "_" + post.firstname.substring(0, 1)).toLowerCase() + ".png";
 
             if (post.house == "Gryffindor") {
                 modal.querySelector("#modalContent").classList.add("gryffindor");
