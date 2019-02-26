@@ -137,7 +137,7 @@
             <button class="sortButton firstNameButton">Sort by Firstname</button>
             <button class="sortButton lastNameButton">Sort by Lastname</button>
             <button class="sortButton">Sort by House</button>
-            <button data-category="Gryffindor" class="filterButton gryffindor">Gryffindor students</button>
+            <button data-category="Gryffindor" onclick="filterByHouse('Gryffindor')" class="filterButton gryffindor">Gryffindor students</button>
             <button data-category="Hufflepuff" class="filterButton hufflepuff">Hufflepuff students</button>
             <button data-category="Ravenclaw" class="filterButton ravenclaw">Ravenclaw students</button>
             <button data-category="Slytherin" class="filterButton slytherin">Slytherin students</button>
@@ -160,6 +160,9 @@
         </div>
     </template>
     <script>
+    "use strict";
+
+
         let thisJson;
         let dest = document.querySelector(".data-container");
         let houseFilter = "All";
@@ -207,17 +210,65 @@
             }
           });
           
+          createStudents();
         }
+
+        const Student = {
+          firstname: "student firstname",
+          lastname: "student lastname",
+          house: "student house",
+          
+          setJSONData ( studentData ) {
+            let firstSpace = studentData.fullname.indexOf(" ");
+            let lastSpace = studentData.fullname.lastIndexOf(" ");
+
+            this.firstname = studentData.fullname.substring(0, firstSpace);
+            this.lastname = studentData.fullname.substring(lastSpace, );
+            this.house = studentData.house;
+          },
         
-        function filtering() {
-            dest.textContent = "";
-            houseFilter = this.getAttribute("data-category");
-            showJson();
         }
+
+        const arrayOfStudents = [];
+
+        function createStudents() {
+
+          thisJson.forEach(studentData => {
+              let studentPrototype = Object.create(Student);
+
+              studentPrototype.setJSONData( studentData );
+              
+              arrayOfStudents.push(studentPrototype);
+              
+          });
+          console.log(arrayOfStudents);
+
+        }
+
+        function filterByHouse(house) {
+          function onlyHouse( element ) {
+            if (element.house === house ) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        cosnole.log("1")
+        return arrayOfStudents.filter(onlyHouse);
+    }
+
+
         
-        document.querySelectorAll(".filterButton").forEach(knap => {
-            knap.addEventListener("click", filtering)
-        });
+        // function filtering() {
+        //     dest.textContent = "";
+        //     houseFilter = this.getAttribute("data-category");
+        //     showJson();
+        // }
+        
+        // document.querySelectorAll(".filterButton").forEach(knap => {
+        //     knap.addEventListener("click", filtering)
+        // });
 
         function showModal(post) {
             let firstSpace = post.fullname.indexOf(" ");
