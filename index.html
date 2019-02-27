@@ -135,8 +135,8 @@
     <main>
         <div class="buttonContainer">
             <button id="firstnameButton">Sort by Firstname</button>
-            <button >Sort by Lastname</button>
-            <button >Sort by House</button>
+            <button id="lastnameButton">Sort by Lastname</button>
+            <button id="houseButton">Sort by House</button>
             <button id="gryffindor" class="gryffindor">Gryffindor students</button>
             <button id="hufflepuff" class="hufflepuff">Hufflepuff students</button>
             <button id="ravenclaw" class="ravenclaw">Ravenclaw students</button>
@@ -157,7 +157,9 @@
              
           </p>
           <p data-house></p>
+
         </div>
+        <button data-studentbutton></button>
     </template>
     <script>
 
@@ -178,8 +180,6 @@
           document.querySelector("#slytherin").addEventListener("click", sortSlytherin);
           document.querySelector("#all").addEventListener("click", sortAll);
 
-          document.querySelector("#firstnameButton").addEventListener("click", callSortByFirstname);
-          
 
           getJson();
 
@@ -196,6 +196,7 @@
           firstname: "student firstname",
           lastname: "student lastname",
           house: "student house",
+          studentbutton: "student button",
           
           setJsonData ( studentData ) {
             let firstSpace = studentData.fullname.indexOf(" ");
@@ -204,6 +205,7 @@
             this.firstname = studentData.fullname.substring(0, firstSpace);
             this.lastname = studentData.fullname.substring(lastSpace + 1, );
             this.house = studentData.house;
+            this.studentbutton = "Expel " + studentData.fullname.substring(0, firstSpace) + " " + studentData.fullname.substring(lastSpace + 1, );
           },
         
         }
@@ -262,7 +264,7 @@
         }
 
         function filterList(houseFilter) {
-          dest.textContent = "";
+         
           let filteredList = arrayOfStudents;
 
           if (houseFilter === "") {
@@ -282,13 +284,47 @@
           }
           
           showJson(filteredList);
+          document.querySelector("#firstnameButton").addEventListener("click", function() {
+            callSortByFirstname(filteredList);
+          });
+          document.querySelector("#lastnameButton").addEventListener("click", function() {
+            callSortByLastname(filteredList);
+          });
+          document.querySelector("#houseButton").addEventListener("click", function() {
+            callSortByHouse(filteredList);
+          });
           return filteredList;
 
         }
 
+
+
         function callSortByFirstname(filteredList) {
-          arrayOfStudents.sort(sortByFirstname);
+          
+          filteredList.sort(sortByFirstname);
           showJson(filteredList);
+          console.log(filteredList);
+          return filteredList;
+          
+          
+        }
+
+        function callSortByLastname(filteredList) {
+          
+          filteredList.sort(sortByLastname);
+          showJson(filteredList);
+          return filteredList;
+          
+          
+        }
+
+        function callSortByHouse(filteredList) {
+          
+          filteredList.sort(sortByHouse);
+          showJson(filteredList);
+          return filteredList;
+          
+          
         }
 
         function sortByFirstname(a, b) {
@@ -330,6 +366,7 @@
         function showJson(filteredList, sortedList) {
 
           let myTemplate = document.querySelector(".data-template");
+          dest.textContent = "";
 
           filteredList.forEach(post => {
             
@@ -338,10 +375,14 @@
               klon.querySelector("[data-firstname]").textContent = post.firstname;
               klon.querySelector("[data-lastname]").textContent = post.lastname;
               klon.querySelector("[data-house]").textContent = post.house;
+              klon.querySelector("[data-studentbutton]").textContent = post.studentbutton;
               
 
               klon.querySelector(".name").addEventListener("click", () => {
                 showModal(post);
+              });
+              klon.querySelector("[data-studentbutton]").addEventListener("click", () => {
+                expelStudent(post);
               });
 
               dest.appendChild(klon);
@@ -386,6 +427,10 @@
               modal.querySelector("#modalContent").classList.remove("hufflepuff", "gryffindor", "ravenclaw", "slytherin");
            
             }, 500);
+        }
+
+        function expelStudent() {
+          console.log("1");
         }
 
         
