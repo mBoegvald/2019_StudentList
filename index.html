@@ -150,6 +150,7 @@
     </main>
 
     <template class="data-template">
+      <div class="studentContainer">
         <div class="pWrap">
           <p class="name"> 
             <span data-firstname></span>
@@ -159,7 +160,9 @@
           <p data-house></p>
 
         </div>
+      
         <button data-studentbutton></button>
+      </div>
     </template>
     <script>
 
@@ -169,6 +172,7 @@
         let dest = document.querySelector(".data-container");
         let modal = document.querySelector("#modal");
         let houseFilter = "";
+        let idCounter = 0;
 
         document.addEventListener("DOMContentLoaded", init);
 
@@ -377,12 +381,13 @@
               klon.querySelector("[data-house]").textContent = post.house;
               klon.querySelector("[data-studentbutton]").textContent = post.studentbutton;
               
+              idCounter++;
 
               klon.querySelector(".name").addEventListener("click", () => {
                 showModal(post);
               });
               klon.querySelector("[data-studentbutton]").addEventListener("click", () => {
-                expelStudent(post);
+                expelStudent();
               });
 
               dest.appendChild(klon);
@@ -430,7 +435,9 @@
         }
 
         function expelStudent() {
-          console.log("1");
+          
+          document.querySelector(".studentContainer").style.display = "none";
+          
         }
 
         
