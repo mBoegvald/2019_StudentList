@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta firstname="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Studentlist_2</title>
 
@@ -29,12 +29,12 @@
       }
 
       body {
-          background-color: aliceblue;
+        background-color: aliceblue;
       }
 
       .gryffindor {
-          background-color: var(--gryffindor-bg-color);
-          color: var(--gryffindor-txt-color);
+        background-color: var(--gryffindor-bg-color);
+        color: var(--gryffindor-txt-color);
       }
 
       .hufflepuff {
@@ -48,21 +48,21 @@
       }
 
       .slytherin {
-          background-color: var(--slytherin-bg-color);
-          color: var(--slytherin-txt-color);  
+        background-color: var(--slytherin-bg-color);
+        color: var(--slytherin-txt-color);  
       }
 
       .pWrap {
-            width: 300px;
-            display: flex;
-            justify-content: space-between;
-            padding: 5px;
+        width: 300px;
+        display: flex;
+        justify-content: space-between;
+        padding: 5px;
       }
 
       button {
-          padding: 3px;
-          border-radius: 5%;
-          font-family: var(--stdFont);
+        padding: 3px;
+        border-radius: 5%;
+        font-family: var(--stdFont);
       }
 
       #modal {
@@ -89,8 +89,6 @@
         font-size: 2em;
       }
 
-
-
       #close {
         width: 10%;
         height: 5%;
@@ -98,7 +96,7 @@
         background: var(--hvid);
         border: 0;
         transition: .4s;
-    }
+      }
 
       #modal.show_modal {
         opacity: 1;
@@ -106,341 +104,339 @@
         transition: 0.5s;
       }
 
-
+      .expelledStudentsDiv {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        font-size: 2em;
+      }
 
     </style>
 </head>
 <body>
     <section id="modal">
+      <div id="modalContent">
+        <button id="close">&#10006;</button>
+        <h1 id="modalHeader">
+          <span data-firstname></span>
+          <span data-lastname></span>
+        </h1>
+        <h2 id="modalHouse"></h2>
+        <img src="" alt="" id="modalImg">
 
-
-        
-
-        <div id="modalContent">
-            <button id="close">&#10006;
-
-            </button>
-          <h1 id="modalHeader">
-            <span data-firstname></span>
-            <span data-lastname></span>
-          </h1>
-          <h2 id="modalHouse"></h2>
-          <img src="" alt="" id="modalImg">
-        
-        </div>
-
+      </div>
     </section>
 
-  </section>
     <main>
-        <div class="buttonContainer">
-            <button id="firstnameButton">Sort by Firstname</button>
-            <button id="lastnameButton">Sort by Lastname</button>
-            <button id="houseButton">Sort by House</button>
-            <button id="gryffindor" class="gryffindor">Gryffindor students</button>
-            <button id="hufflepuff" class="hufflepuff">Hufflepuff students</button>
-            <button id="ravenclaw" class="ravenclaw">Ravenclaw students</button>
-            <button id="slytherin" class="slytherin">Slytherin students</button>
-            <button id="all">All students</button>
-          </div>
-        <section class="data-container">
-          
+      <div class="buttonContainer">
+        <button id="firstnameButton">Sort by Firstname</button>
+        <button id="lastnameButton">Sort by Lastname</button>
+        <button id="houseButton">Sort by House</button>
+        <button id="gryffindor" class="gryffindor">Gryffindor students</button>
+        <button id="hufflepuff" class="hufflepuff">Hufflepuff students</button>
+        <button id="ravenclaw" class="ravenclaw">Ravenclaw students</button>
+        <button id="slytherin" class="slytherin">Slytherin students</button>
+        <button id="all">All students</button>
+      </div>
+      <section class="data-container">
+         
 
-        </section>
+      </section>
+      <div class="expelledStudentsDiv">
+        <p>Number of expelled students: <span id="numberOfExpelled"></span></p>
+      </div>
     </main>
 
     <template class="data-template">
       <div class="studentContainer">
         <div class="pWrap">
-          <p class="name"> 
+          <p class="firstname"> 
             <span data-firstname></span>
-            <span data-lastname></span> 
-             
+            <span data-lastname></span>  
           </p>
-          <p data-house></p>
-
+          <p data-house>
+          </p>
         </div>
       
-        <button data-studentbutton></button>
+        <button data-studentbutton>Expel</button>
       </div>
     </template>
     <script>
 
     "use strict";
 
-        let thisJson;
-        let dest = document.querySelector(".data-container");
-        let modal = document.querySelector("#modal");
-        let houseFilter = "";
-        let idCounter = 0;
+      let thisJson;
+      let dest = document.querySelector(".data-container");
+      let modal = document.querySelector("#modal");
+      let houseFilter = "";
+      let idCounter = 0;
+      let filteredList;
+      let numberOfExpelled;
 
-        document.addEventListener("DOMContentLoaded", init);
+      document.addEventListener("DOMContentLoaded", init);
 
-        function init() {
+      function init() {
 
-          document.querySelector("#gryffindor").addEventListener("click", sortGryffindor);
-          document.querySelector("#hufflepuff").addEventListener("click", sortHufflepuff);
-          document.querySelector("#ravenclaw").addEventListener("click", sortRavenclaw);
-          document.querySelector("#slytherin").addEventListener("click", sortSlytherin);
-          document.querySelector("#all").addEventListener("click", sortAll);
+        document.querySelector("#gryffindor").addEventListener("click", sortGryffindor);
+        document.querySelector("#hufflepuff").addEventListener("click", sortHufflepuff);
+        document.querySelector("#ravenclaw").addEventListener("click", sortRavenclaw);
+        document.querySelector("#slytherin").addEventListener("click", sortSlytherin);
+        document.querySelector("#all").addEventListener("click", sortAll);
+        document.querySelector(".data-container").addEventListener("click", clickList);
+        getJson();
 
+      } 
 
-          getJson();
+      async function getJson() {
 
-        } 
+        let myJson = await fetch("students1991.json");
+        thisJson = await myJson.json();
+        createStudents(thisJson);
+      }
 
-        async function getJson() {
-
-          let myJson = await fetch("students1991.json");
-          thisJson = await myJson.json();
-          createStudents(thisJson);
-        }
-
-        const Student = {
-          firstname: "student firstname",
-          lastname: "student lastname",
-          house: "student house",
-          studentbutton: "student button",
+      const Student = {
+        firstname: "student firstname",
+        lastname: "student lastname",
+        house: "student house",
+        studentbutton: "student button",
           
-          setJsonData ( studentData ) {
-            let firstSpace = studentData.fullname.indexOf(" ");
-            let lastSpace = studentData.fullname.lastIndexOf(" ");
+        setJsonData ( studentData ) {
+          let firstSpace = studentData.fullname.indexOf(" ");
+          let lastSpace = studentData.fullname.lastIndexOf(" ");
 
-            this.firstname = studentData.fullname.substring(0, firstSpace);
-            this.lastname = studentData.fullname.substring(lastSpace + 1, );
-            this.house = studentData.house;
-            this.studentbutton = "Expel " + studentData.fullname.substring(0, firstSpace) + " " + studentData.fullname.substring(lastSpace + 1, );
-          },
-        
-        }
+          this.firstname = studentData.fullname.substring(0, firstSpace);
+          this.lastname = studentData.fullname.substring(lastSpace + 1, );
+          this.house = studentData.house;
+            
+        },
+      }
 
-        const arrayOfStudents = [];
+      const arrayOfStudents = [];
 
-        function createStudents() {
+      function createStudents() {
 
-          thisJson.forEach(studentData => {
-              let studentPrototype = Object.create(Student);
-
-              studentPrototype.setJsonData( studentData );
+        thisJson.forEach(studentData => {
+          let studentPrototype = Object.create(Student);
+          studentPrototype.setJsonData( studentData );
+          arrayOfStudents.push(studentPrototype);
               
-              arrayOfStudents.push(studentPrototype);
-              
-          });
-          filterList(houseFilter);
+        });
 
-        }
+        filterList(houseFilter);
 
-        function sortGryffindor() {
-          houseFilter = "gryffindor";
-          filterList(houseFilter);
-        }
+      }
+
+      function sortGryffindor() {
+        houseFilter = "gryffindor";
+        filterList(houseFilter);
+      }
         
-        function sortHufflepuff() {
-          houseFilter = "hufflepuff";
-          filterList(houseFilter);
-        }
+      function sortHufflepuff() {
+        houseFilter = "hufflepuff";
+        filterList(houseFilter);
+      }
 
-        function sortRavenclaw() {
-          houseFilter = "ravenclaw";
-          filterList(houseFilter);
-        }
+      function sortRavenclaw() {
+        houseFilter = "ravenclaw";
+        filterList(houseFilter);
+      }
 
-        function sortSlytherin() {
-          houseFilter = "slytherin";
-          filterList(houseFilter);
-        }
+      function sortSlytherin() {
+        houseFilter = "slytherin";
+        filterList(houseFilter);
+      }
 
-        function sortAll() {
-          houseFilter = "";
-          filterList(houseFilter);
-        }
+      function sortAll() {
+        houseFilter = "";
+        filterList(houseFilter);
+      }
 
-        function filterByHouse(house) {
-          function onlyHouse( element ) {
-              if (element.house.toLowerCase() === house.toLowerCase() ) {
-                  return true;
-              }
-              else {
-                  return false;
-              }
+      function filterByHouse(house) {
+        function onlyHouse( element ) {
+          if (element.house.toLowerCase() === house.toLowerCase() ) {
+            return true;
           }
+          else {
+            return false;
+          }
+        }
         return arrayOfStudents.filter(onlyHouse);
+      }
+
+      function filterList(houseFilter) {
+        let filteredList = arrayOfStudents;
+
+        if (houseFilter === "") {   
+          }
+        else if (houseFilter === "gryffindor") {
+          filteredList = filterByHouse("gryffindor");
         }
-
-        function filterList(houseFilter) {
-         
-          let filteredList = arrayOfStudents;
-
-          if (houseFilter === "") {
-            
-          }
-          else if (houseFilter === "gryffindor") {
-            filteredList = filterByHouse("gryffindor");
-          }
-          else if (houseFilter === "hufflepuff") {
-            filteredList = filterByHouse("hufflepuff");
-          }
-          else if (houseFilter === "ravenclaw") {
-            filteredList = filterByHouse("ravenclaw");
-          }
-          else if (houseFilter === "slytherin") {
-            filteredList = filterByHouse("slytherin");
-          }
+        else if (houseFilter === "hufflepuff") {
+          filteredList = filterByHouse("hufflepuff");
+        }
+        else if (houseFilter === "ravenclaw") {
+          filteredList = filterByHouse("ravenclaw");
+        }
+        else if (houseFilter === "slytherin") {
+          filteredList = filterByHouse("slytherin");
+        }
           
-          showJson(filteredList);
-          document.querySelector("#firstnameButton").addEventListener("click", function() {
-            callSortByFirstname(filteredList);
-          });
-          document.querySelector("#lastnameButton").addEventListener("click", function() {
-            callSortByLastname(filteredList);
-          });
-          document.querySelector("#houseButton").addEventListener("click", function() {
-            callSortByHouse(filteredList);
-          });
-          return filteredList;
+        showJson(filteredList);
+        document.querySelector("#firstnameButton").addEventListener("click", function() {
+          callSortByFirstname(filteredList);
+        });
+        document.querySelector("#lastnameButton").addEventListener("click", function() {
+          callSortByLastname(filteredList);
+        });
+        document.querySelector("#houseButton").addEventListener("click", function() {
+          callSortByHouse(filteredList);
+        });
+        return filteredList;
+
+      }
+
+      function callSortByFirstname(filteredList) {    
+        filteredList.sort(sortByFirstname);
+        showJson(filteredList);
+        console.log(filteredList);
+        return filteredList;
+
+      }
+
+      function callSortByLastname(filteredList) {
+        filteredList.sort(sortByLastname);
+        showJson(filteredList);
+        return filteredList;
+   
+      }
+
+      function callSortByHouse(filteredList) {    
+        filteredList.sort(sortByHouse);
+        showJson(filteredList);
+        return filteredList;
+    
+      }
+
+      function sortByFirstname(a, b) {
+        if( a.firstname < b.firstname) {
+          return -1;
 
         }
-
-
-
-        function callSortByFirstname(filteredList) {
-          
-          filteredList.sort(sortByFirstname);
-          showJson(filteredList);
-          console.log(filteredList);
-          return filteredList;
-          
-          
+        else {
+          return 1;
         }
+          
+      }
 
-        function callSortByLastname(filteredList) {
-          
-          filteredList.sort(sortByLastname);
-          showJson(filteredList);
-          return filteredList;
-          
-          
+      function sortByLastname(a, b) {
+        if( a.lastname < b.lastname) {
+          return -1;
         }
-
-        function callSortByHouse(filteredList) {
-          
-          filteredList.sort(sortByHouse);
-          showJson(filteredList);
-          return filteredList;
-          
-          
-        }
-
-        function sortByFirstname(a, b) {
-          if( a.firstname < b.firstname) {
-            return -1;
-
-          }
-          else {
-            return 1;
-          }
-          
-        }
-
-        function sortByLastname(a, b) {
-          if( a.lastname < b.lastname) {
-            return -1;
-
-          }
-          else {
-            return 1;
-          }
-          
-        }
+        else {
+          return 1;
+        }   
+      }
         
-        function sortByHouse(a, b) {
-          if( a.house < b.house) {
-            return -1;
-
-          }
-          else {
-            return 1;
-          }
-          
+      function sortByHouse(a, b) {
+        if( a.house < b.house) {
+          return -1;
         }
-        
+        else {
+          return 1;
+        }  
+      }
 
-       
+      function showJson(filteredList, sortedList) {
+        let myTemplate = document.querySelector(".data-template");
+        dest.textContent = "";
+        document.querySelector("#numberOfExpelled").textContent = expelArray.length;
 
-        function showJson(filteredList, sortedList) {
+        filteredList.forEach(post => {
 
-          let myTemplate = document.querySelector(".data-template");
-          dest.textContent = "";
+          let klon = myTemplate.cloneNode(true).content;
+          klon.querySelector("[data-firstname]").textContent = post.firstname;
+          klon.querySelector("[data-lastname]").textContent = post.lastname;
+          klon.querySelector("[data-house]").textContent = post.house;
+          klon.querySelector("button").dataset.id = post.firstname;
 
-          filteredList.forEach(post => {
-            
-
-              let klon = myTemplate.cloneNode(true).content;
-              klon.querySelector("[data-firstname]").textContent = post.firstname;
-              klon.querySelector("[data-lastname]").textContent = post.lastname;
-              klon.querySelector("[data-house]").textContent = post.house;
-              klon.querySelector("[data-studentbutton]").textContent = post.studentbutton;
+          klon.querySelector(".firstname").addEventListener("click", () => {
+            showModal(post);
+          });
               
-              idCounter++;
+          dest.appendChild(klon);
+        });
+      }
 
-              klon.querySelector(".name").addEventListener("click", () => {
-                showModal(post);
-              });
-              klon.querySelector("[data-studentbutton]").addEventListener("click", () => {
-                expelStudent();
-              });
+      const expelArray = [];
 
-              dest.appendChild(klon);
+      function clickList( event ) {
+
+        if ( event.target.innerHTML === "Expel") {
+          console.log("isRemoveButton"); 
+          clickRemove(event);
+        }
+      }
+
+      function clickRemove( event ) {  
+        let toBeRemoved = findByName(event.target.dataset.id);
+        expelStudent(toBeRemoved);
+
+        function findByName( firstname ) {
+          function findStudent( obj ) {
+            if (obj.firstname === firstname){
+              return true;
             }
-            
-          );
+            else {
+              return false;
+            }
+          }
+          let found = arrayOfStudents.find( findStudent );
+          return found;
         }
 
-       
-        
-
-
-        function showModal(post) {
-
-            modal.classList.add("show_modal");
-            
-            modal.querySelector("[data-firstname]").textContent = post.firstname;
-            modal.querySelector("[data-lastname]").textContent = post.lastname;
-            modal.querySelector("#modalHouse").textContent = post.house;
-            modal.querySelector("#modalImg").src = "images/" + (post.lastname + "_" + post.firstname.substring(0, 1)).toLowerCase() + ".png";
-
-            if (post.house == "Gryffindor") {
-                modal.querySelector("#modalContent").classList.add("gryffindor");
-            }
-
-            if (post.house == "Hufflepuff") {
-                modal.querySelector("#modalContent").classList.add("hufflepuff");
-            }
-            if (post.house == "Ravenclaw") {
-                modal.querySelector("#modalContent").classList.add("ravenclaw");
-            }
-            if (post.house == "Slytherin") {
-                modal.querySelector("#modalContent").classList.add("slytherin");
-            }
-
-            document.querySelector("#close").addEventListener("click", hideModal);
+        function expelStudent( firstname ) {
+          let pos = arrayOfStudents.indexOf( firstname );
+          let deletedElement = arrayOfStudents.splice(pos, 1);
+          expelArray.push(...deletedElement);
+          console.log(expelArray);
         }
 
-        function hideModal() {
-            modal.classList.remove("show_modal");
-            setTimeout(function() {
-              modal.querySelector("#modalContent").classList.remove("hufflepuff", "gryffindor", "ravenclaw", "slytherin");
-           
-            }, 500);
-        }
+        filterList(arrayOfStudents);
+      }
 
-        function expelStudent() {
-          
-          document.querySelector(".studentContainer").style.display = "none";
-          
-        }
+      function showModal(post) {
 
-        
+        modal.classList.add("show_modal");      
+        modal.querySelector("[data-firstname]").textContent = post.firstname;
+        modal.querySelector("[data-lastname]").textContent = post.lastname;
+        modal.querySelector("#modalHouse").textContent = post.house;
+        modal.querySelector("#modalImg").src = "images/" + (post.lastname + "_" + post.firstname.substring(0, 1)).toLowerCase() + ".png";
+
+        if (post.house == "Gryffindor") {
+          modal.querySelector("#modalContent").classList.add("gryffindor");
+        }
+        if (post.house == "Hufflepuff") {
+          modal.querySelector("#modalContent").classList.add("hufflepuff");
+        }
+        if (post.house == "Ravenclaw") {
+          modal.querySelector("#modalContent").classList.add("ravenclaw");
+        }
+        if (post.house == "Slytherin") {
+          modal.querySelector("#modalContent").classList.add("slytherin");
+        }
+        document.querySelector("#close").addEventListener("click", hideModal);
+      }
+
+      function hideModal() {
+        modal.classList.remove("show_modal");
+        setTimeout(function() {
+          modal.querySelector("#modalContent").classList.remove("hufflepuff", "gryffindor", "ravenclaw", "slytherin");   
+        }, 500);
+      }
+
+      function expelStudent() {    
+        document.querySelector(".studentContainer").style.display = "none";
+      }
 
     </script>
 </body>
