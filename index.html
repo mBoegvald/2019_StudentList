@@ -144,6 +144,7 @@
       </section>
       <div class="studentsDiv">
         <p>Number of students: <span id="numberOfStudents"></span></p>
+      
         <p>Number of expelled students: <span id="numberOfExpelled"></span></p>
       </div>
     </main>
@@ -156,6 +157,8 @@
             <span data-lastname></span>  
           </p>
           <p data-house>
+          </p>
+          <p data-bloodstatus>
           </p>
         </div>
       
@@ -174,6 +177,7 @@
       let filteredList;
       let numberOfExpelled;
       let numberOfStudents;
+      let thisBloodList;
 
       document.addEventListener("DOMContentLoaded", init);
 
@@ -193,7 +197,9 @@
 
         let myJson = await fetch("students1991.json");
         thisJson = await myJson.json();
-        createStudents(thisJson);
+        let bloodJson = await fetch("http://petlatkea.dk/2019/hogwarts/families.json");
+        thisBloodList = await bloodJson.json();
+        createStudents();
       }
 
       const Student = {
@@ -201,6 +207,8 @@
         lastname: "student lastname",
         house: "student house",
         studentbutton: "student button",
+        bloodstatus: "student bloodstatus",
+        inquisitorialsquad: "student inquisitorial squad", 
           
         setJsonData ( studentData ) {
           let firstSpace = studentData.fullname.indexOf(" ");
@@ -209,14 +217,44 @@
           this.firstname = studentData.fullname.substring(0, firstSpace);
           this.lastname = studentData.fullname.substring(lastSpace + 1, );
           this.house = studentData.house;
+          this.bloodstatus = checkBloodStatus(this.lastname);         
             
         },
+      }
+
+      function checkBloodStatus(lastname) {
+        let pureBlood;
+        let halfBlood;
+        let muggleBlood;
+
+        thisBloodList.pure.forEach(student => {
+          if (student === lastname) {
+            pureBlood = "Pure";
+          }
+          else {
+            muggleBlood = "Muggle";
+          }
+          
+        });
+
+        thisBloodList.half.forEach(student => {
+          if (student === lastname) {
+            halfBlood = "Half";
+          }
+          else {
+            muggleBlood = "Muggle";
+          }
+          
+        });
+        console.log(pureBlood || halfBlood || muggleBlood);
+        return pureBlood || halfBlood || muggleBlood;
+
       }
 
       const arrayOfStudents = [];
 
       function createStudents() {
-
+        
         thisJson.forEach(studentData => {
           let studentPrototype = Object.create(Student);
           studentPrototype.setJsonData( studentData );
@@ -269,7 +307,7 @@
         let filteredList = arrayOfStudents;
 
         if (houseFilter === "") {   
-          }
+        }
         else if (houseFilter === "gryffindor") {
           filteredList = filterByHouse("gryffindor");
         }
@@ -360,6 +398,7 @@
           klon.querySelector("[data-firstname]").textContent = post.firstname;
           klon.querySelector("[data-lastname]").textContent = post.lastname;
           klon.querySelector("[data-house]").textContent = post.house;
+          klon.querySelector("[data-bloodstatus]").textContent = post.bloodstatus;
           klon.querySelector("button").dataset.id = post.firstname;
 
           klon.querySelector(".firstname").addEventListener("click", () => {
@@ -375,7 +414,6 @@
       function clickList( event ) {
 
         if ( event.target.innerHTML === "Expel") {
-          console.log("isRemoveButton"); 
           clickRemove(event);
         }
       }
@@ -404,7 +442,7 @@
           console.log(expelArray);
         }
 
-        filterList(arrayOfStudents);
+        filterList(houseFilter);  
       }
 
       function showModal(post) {
@@ -435,10 +473,6 @@
         setTimeout(function() {
           modal.querySelector("#modalContent").classList.remove("hufflepuff", "gryffindor", "ravenclaw", "slytherin");   
         }, 500);
-      }
-
-      function expelStudent() {    
-        document.querySelector(".studentContainer").style.display = "none";
       }
 
     </script>
