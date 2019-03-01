@@ -104,7 +104,7 @@
         transition: 0.5s;
       }
 
-      .expelledStudentsDiv {
+      .studentsDiv {
         position: fixed;
         top: 50%;
         left: 50%;
@@ -142,7 +142,8 @@
          
 
       </section>
-      <div class="expelledStudentsDiv">
+      <div class="studentsDiv">
+        <p>Number of students: <span id="numberOfStudents"></span></p>
         <p>Number of expelled students: <span id="numberOfExpelled"></span></p>
       </div>
     </main>
@@ -172,6 +173,7 @@
       let idCounter = 0;
       let filteredList;
       let numberOfExpelled;
+      let numberOfStudents;
 
       document.addEventListener("DOMContentLoaded", init);
 
@@ -350,6 +352,7 @@
         let myTemplate = document.querySelector(".data-template");
         dest.textContent = "";
         document.querySelector("#numberOfExpelled").textContent = expelArray.length;
+        document.querySelector("#numberOfStudents").textContent = filteredList.length;
 
         filteredList.forEach(post => {
 
