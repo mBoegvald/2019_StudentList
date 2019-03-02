@@ -30,6 +30,21 @@
 
       body {
         background-color: aliceblue;
+        display: grid;
+        grid-template-rows: 1fr auto;
+      }
+
+      .data-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-gap: 20px;
+        max-width: 850px;
+
+      }
+
+      .studentContainer {
+        display: flex;
+        flex-wrap: wrap;
       }
 
       .gryffindor {
@@ -147,6 +162,11 @@
       
         <p>Number of expelled students: <span id="numberOfExpelled"></span></p>
       </div>
+      <div class="inqSquadDiv">
+        <p id="numberOfInq"></p>
+        <div id="inqSquad"></div>
+        
+      </div>
     </main>
 
     <template class="data-template">
@@ -163,7 +183,21 @@
         </div>
       
         <button data-studentbutton>Expel</button>
+        <button data-inq>Add to Inquisitorial Squad</button>
       </div>
+    </template>
+
+    <template id="inqList">
+      <div class="inqStudentContainer">
+        <div class="inqWrap">
+          <p class="inqFirstname"> 
+            <span data-inqfirstname></span>
+            <span data-inqlastname></span>  
+          </p>
+          <p data-inqhouse></p>
+          <p data-inqbloodstatus></p>
+      </div> 
+      <button data-inqremove>Remove from Inquisitorial Squad</button>
     </template>
     <script>
 
@@ -171,6 +205,7 @@
 
       let thisJson;
       let dest = document.querySelector(".data-container");
+      let inqDest = document.querySelector("#inqSquad");
       let modal = document.querySelector("#modal");
       let houseFilter = "";
       let idCounter = 0;
@@ -338,6 +373,7 @@
       function callSortByFirstname(filteredList) {    
         filteredList.sort(sortByFirstname);
         showJson(filteredList);
+        
         console.log(filteredList);
         return filteredList;
 
@@ -395,28 +431,109 @@
         filteredList.forEach(post => {
 
           let klon = myTemplate.cloneNode(true).content;
-          klon.querySelector("[data-firstname]").textContent = post.firstname;
+          klon.querySelector("[data-firstname]").textContent = "Name:" + post.firstname;
           klon.querySelector("[data-lastname]").textContent = post.lastname;
-          klon.querySelector("[data-house]").textContent = post.house;
-          klon.querySelector("[data-bloodstatus]").textContent = post.bloodstatus;
-          klon.querySelector("button").dataset.id = post.firstname;
+          klon.querySelector("[data-house]").textContent = "House:" + post.house;
+          klon.querySelector("[data-bloodstatus]").textContent = "Blood-status:" + post.bloodstatus;
+          klon.querySelector("[data-studentbutton]").dataset.id = post.firstname;
+          klon.querySelector("[data-inq]").dataset.id = post.firstname;
 
           klon.querySelector(".firstname").addEventListener("click", () => {
             showModal(post);
           });
-              
+
+          dest.appendChild(klon);
+          
+        });
+        showInqSquad(inqArray);
+      }
+
+      function showInqSquad(inqArray) {
+        let myTemplate = document.querySelector("#inqList");
+        inqDest.textContent = "";
+
+        inqArray.forEach(post => {
+
+          let klon = myTemplate.cloneNode(true).content;
+          klon.querySelector("[data-inqfirstname]").textContent = post.firstname;
+          klon.querySelector("[data-inqlastname]").textContent = post.lastname;
+          klon.querySelector("[data-inqhouse]").textContent = post.house;
+          klon.querySelector("[data-inqbloodstatus]").textContent = post.bloodstatus;
+          klon.querySelector("[data-inqremove]").dataset.id = post.firstname;
+         
           dest.appendChild(klon);
         });
       }
 
       const expelArray = [];
+      const inqArray = [];
 
       function clickList( event ) {
 
         if ( event.target.innerHTML === "Expel") {
           clickRemove(event);
         }
+        if (event.target.innerHTML === "Add to Inquisitorial Squad") {
+          clickAdd(event);
+        }
+        if (event.target.innerHTML === "Remove from Inquisitorial Squad") {
+          clickBack(event);
+        }
+
       }
+      function clickBack( event ) {  
+        let toBeBack = findByName(event.target.dataset.id);
+        backStudent(toBeBack);
+
+        function findByName( firstname ) {
+          function findStudent( obj ) {
+            if (obj.firstname === firstname){
+              return true;
+            }
+            else {
+              return false;
+            }
+          }
+          let found = inqArray.find( findStudent );
+          return found;
+        }
+
+        function backStudent( firstname ) {
+          let pos = inqArray.indexOf( firstname );
+          let deletedElement = inqArray.splice(pos, 1);
+          arrayOfStudents.push(...deletedElement);
+        }
+
+        filterList(houseFilter);  
+      }
+
+      function clickAdd(event) {
+        let toBeAdded = findByName(event.target.dataset.id);
+        addStudent(toBeAdded);
+
+        function findByName( firstname ) {
+          function findStudent( obj ) {
+            if (obj.firstname === firstname){
+              return true;
+            }
+            else {
+              return false;
+            }
+          }
+          let found = arrayOfStudents.find( findStudent );
+          return found;
+        }
+
+        function addStudent(firstname) {
+        let pos = arrayOfStudents.indexOf( firstname );
+        let deletedElement = arrayOfStudents.splice(pos, 1);
+        inqArray.push(...deletedElement);
+        
+        }
+        filterList(houseFilter);
+      }
+
+      
 
       function clickRemove( event ) {  
         let toBeRemoved = findByName(event.target.dataset.id);
@@ -439,7 +556,7 @@
           let pos = arrayOfStudents.indexOf( firstname );
           let deletedElement = arrayOfStudents.splice(pos, 1);
           expelArray.push(...deletedElement);
-          console.log(expelArray);
+          
         }
 
         filterList(houseFilter);  
