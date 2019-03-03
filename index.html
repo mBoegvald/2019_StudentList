@@ -48,6 +48,18 @@
         
       }
 
+      .studentContainer {
+        border: 1px solid black;
+        padding: 5px;
+      }
+
+      .data-container p {
+        padding: 3px;
+      }
+
+      .data-container .firstname {
+        cursor: pointer;
+      }
 
       .gryffindor {
         background-color: var(--gryffindor-bg-color);
@@ -69,16 +81,11 @@
         color: var(--slytherin-txt-color);  
       }
 
-      .pWrap {
-        width: 300px;
-        display: flex;
-        justify-content: space-between;
-        padding: 5px;
-      }
 
       button {
-        padding: 3px;
+        padding: 5px;
         border-radius: 5%;
+        cursor: pointer;
         
       }
 
@@ -104,6 +111,10 @@
       
       #modal h1 {
         font-size: 2em;
+      }
+
+      #modal img {
+        max-width: 110px;
       }
 
       #close {
@@ -499,6 +510,19 @@
           klon.querySelector("[data-bloodstatus]").textContent = "Blood-status: " + post.bloodstatus;
           klon.querySelector("[data-studentbutton]").dataset.id = post.firstname;
           klon.querySelector("[data-inq]").dataset.id = post.firstname;
+
+          if (post.house == "Gryffindor") {
+            klon.querySelector(".studentContainer").classList.add("gryffindor");
+          }
+          if (post.house == "Hufflepuff") {
+            klon.querySelector(".studentContainer").classList.add("hufflepuff");
+          }
+          if (post.house == "Ravenclaw") {
+            klon.querySelector(".studentContainer").classList.add("ravenclaw");
+          }
+          if (post.house == "Slytherin") {
+            klon.querySelector(".studentContainer").classList.add("slytherin");
+          }
 
           klon.querySelector(".firstname").addEventListener("click", () => {
             showModal(post);
