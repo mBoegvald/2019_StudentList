@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta firstname="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Studentlist_2</title>
 
     <style>
@@ -26,6 +25,7 @@
       * {
         margin: 0;
         padding: 0;
+        font-family: var(--stdFont);
         
       }
 
@@ -35,18 +35,19 @@
         grid-template-rows: 1fr auto;
       }
 
+
+      main {
+        margin: 0 auto;
+      }
       .data-container {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
         grid-gap: 20px;
-        max-width: 850px;
-
+        max-width: 1000px;
+        margin: 30px auto;
+        
       }
 
-      .studentContainer {
-        display: flex;
-        flex-wrap: wrap;
-      }
 
       .gryffindor {
         background-color: var(--gryffindor-bg-color);
@@ -143,6 +144,24 @@
         font-size: 3em;
         color: white;
       }
+      .divContainer {
+        position: fixed;
+        top: 0;
+        right: 0;
+      }
+      .inqSquadDiv {
+        min-height: 500px;
+        width: 300px;
+        border: 1px solid black;
+      }
+      #numberOfInq {
+        border-bottom: 1px solid black;
+        padding: 5px;
+      }
+
+      #inqSquad {
+        padding: 5px;
+      }
 
     </style>
 </head>
@@ -181,21 +200,22 @@
          
 
       </section>
-      <div class="studentsDiv">
-        <p>Number of students: <span id="numberOfStudents"></span></p>
-      
-        <p>Number of expelled students: <span id="numberOfExpelled"></span></p>
-      </div>
-      <div class="inqSquadDiv">
-        <p id="numberOfInq"></p>
-        <div id="inqSquad"></div>
-        
+        <div class="divContainer">
+          <div class="inqSquadDiv">
+            <p id="numberOfInq"></p>
+            <div id="inqSquad"></div>
+            
+          </div>
+          <div class="">
+              <p>Number of students: <span id="numberOfStudents"></span></p>
+            
+              <p>Number of expelled students: <span id="numberOfExpelled"></span></p>
+          </div>
       </div>
     </main>
 
     <template class="data-template">
       <div class="studentContainer">
-        <div class="pWrap">
           <p class="firstname"> 
             <span data-firstname></span>
             <span data-lastname></span>  
@@ -204,7 +224,6 @@
           </p>
           <p data-bloodstatus>
           </p>
-        </div>
       
         <button data-studentbutton>Expel</button>
         <button data-inq>Add to Inquisitorial Squad</button>
@@ -287,6 +306,8 @@
             
         },
       }
+      
+     
 
       function checkBloodStatus(lastname) {
         let pureBlood;
@@ -472,10 +493,10 @@
         filteredList.forEach(post => {
 
           let klon = myTemplate.cloneNode(true).content;
-          klon.querySelector("[data-firstname]").textContent = "Name:" + post.firstname;
+          klon.querySelector("[data-firstname]").textContent = "Name: " + post.firstname;
           klon.querySelector("[data-lastname]").textContent = post.lastname;
-          klon.querySelector("[data-house]").textContent = "House:" + post.house;
-          klon.querySelector("[data-bloodstatus]").textContent = "Blood-status:" + post.bloodstatus;
+          klon.querySelector("[data-house]").textContent = "House: " + post.house;
+          klon.querySelector("[data-bloodstatus]").textContent = "Blood-status: " + post.bloodstatus;
           klon.querySelector("[data-studentbutton]").dataset.id = post.firstname;
           klon.querySelector("[data-inq]").dataset.id = post.firstname;
 
@@ -487,6 +508,7 @@
           
         });
         showInqSquad(inqArray);
+        document.querySelector("#numberOfInq").textContent = "Currently " + inqArray.length + " students on the Inquisitorial Squad";
       }
 
       function showInqSquad(inqArray) {
@@ -502,7 +524,7 @@
           klon.querySelector("[data-inqbloodstatus]").textContent = post.bloodstatus;
           klon.querySelector("[data-inqremove]").dataset.id = post.firstname;
          
-          dest.appendChild(klon);
+          inqDest.appendChild(klon);
         });
       }
 
@@ -566,11 +588,19 @@
         }
 
         function addStudent(firstname) {
-        let pos = arrayOfStudents.indexOf( firstname );
-        let deletedElement = arrayOfStudents.splice(pos, 1);
-        inqArray.push(...deletedElement);
+          let pos = arrayOfStudents.indexOf( firstname );
+
+          if (arrayOfStudents[pos].bloodstatus === "Pure") {
+         
+          let deletedElement = arrayOfStudents.splice(pos, 1);
+          inqArray.push(...deletedElement);
+          }
+          else {
+            alert("This student is not Pure-blooded!");
+          }
         
         }
+
         filterList(houseFilter);
       }
 
