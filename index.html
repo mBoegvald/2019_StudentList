@@ -81,7 +81,6 @@
         color: var(--slytherin-txt-color);  
       }
 
-
       button {
         padding: 5px;
         border-radius: 5%;
@@ -192,7 +191,7 @@
     <section id="rickModal">
       <div class="rickContent">
         <h1>I DONT THINK SO!</h1>
-          <iframe width="961" height="721" src="https://www.youtube.com/embed/DLzxrzFCyOs?autoplay=1" frameborder="0" ></iframe>
+          <!-- <iframe width="961" height="721" src="https://www.youtube.com/embed/DLzxrzFCyOs?autoplay=1" frameborder="0" ></iframe> -->
       </div>
    </section>
 
@@ -285,6 +284,7 @@
         document.querySelector("#slytherin").addEventListener("click", sortSlytherin);
         document.querySelector("#all").addEventListener("click", sortAll);
         document.querySelector(".data-container").addEventListener("click", clickList);
+        document.querySelector(".inqSquadDiv").addEventListener("click", clickList);
         getJson();
 
       } 
@@ -331,21 +331,27 @@
 
         thisBloodList.pure.forEach(student => {
           if (student === lastname) {
-            pureBlood = "Pure";
+
+            let randomNumber = Math.random();
+            if (randomNumber < 0.49) {
+
+              pureBlood = "Muggle";
+            } 
+            else {
+              pureBlood = "Half";
+            }
           }
           else {
-            muggleBlood = "Muggle";
+            muggleBlood = "Pure";
           }
           
         });
 
         thisBloodList.half.forEach(student => {
           if (student === lastname) {
-            halfBlood = "Half";
+            halfBlood = "Pure";
           }
-          else {
-            muggleBlood = "Muggle";
-          }
+          
           
         });
         return pureBlood || halfBlood || muggleBlood;
@@ -595,6 +601,7 @@
       }
 
       function clickAdd(event) {
+        
         let toBeAdded = findByName(event.target.dataset.id);
         addStudent(toBeAdded);
 
@@ -614,10 +621,11 @@
         function addStudent(firstname) {
           let pos = arrayOfStudents.indexOf( firstname );
 
-          if (arrayOfStudents[pos].bloodstatus === "Pure") {
+          if (arrayOfStudents[pos].bloodstatus === "Pure" || arrayOfStudents[pos].house === "Slytherin") {
          
           let deletedElement = arrayOfStudents.splice(pos, 1);
           inqArray.push(...deletedElement);
+          
           }
           else {
             alert("This student is not Pure-blooded!");
@@ -637,6 +645,13 @@
           function findStudent( obj ) {
             if(obj.firstname === "Miklas") {
               rickModal.style.display = "block";
+              let iframe = document.createElement("iframe");
+              iframe.src = "https://www.youtube.com/embed/DLzxrzFCyOs?autoplay=1";
+              iframe.setAttribute("width", "961");
+              iframe.setAttribute("height", "721");
+              iframe.setAttribute("height", "721");
+              iframe.setAttribute("allow", "autoplay");
+              document.querySelector(".rickContent").appendChild(iframe);
             }
             if (obj.firstname === firstname){
               return true;
